@@ -1,6 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router'
-import { useEffect } from 'react'
-import { Home, Info, Briefcase, Mail } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Home, Package, ChevronDown, ChevronRight } from 'lucide-react'
 
 interface SidebarProps {
   isOpen: boolean
@@ -9,6 +9,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const location = useLocation()
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['common']))
   
   // Close sidebar on escape key
   useEffect(() => {
@@ -30,12 +31,41 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
   }, [isOpen, onClose])
 
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId)
+      } else {
+        newSet.add(sectionId)
+      }
+      return newSet
+    })
+  }
+
   // Navigation items
   const navigationItems = [
     { to: '/', label: 'Home', icon: Home, isRoute: true },
-    { to: '/about', label: 'About', icon: Info, isRoute: false },
-    { to: '/projects', label: 'Projects', icon: Briefcase, isRoute: false },
-    { to: '/contact', label: 'Contact', icon: Mail, isRoute: false },
+  ]
+
+  // Component sections
+  const componentSections = [
+    {
+      id: 'common',
+      label: 'Common Components',
+      items: [
+        { name: 'Button', path: '/components/button' },
+        { name: 'Header', path: '/components/header' },
+      ]
+    },
+    {
+      id: 'forms',
+      label: 'Form Components',
+      items: [
+        { name: 'UserForm', path: '/components/user-form' },
+        { name: 'UserManagement', path: '/components/user-management' },
+      ]
+    }
   ]
 
   return (
@@ -61,7 +91,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-lg font-semibold text-gray-800">Navigation</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Components</h2>
           <button
             onClick={onClose}
             className="lg:hidden p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -114,6 +144,59 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               )
             })}
           </ul>
+
+          {/* Components Section */}
+          <div className="mt-6">
+            <div className="flex items-center gap-2 px-3 py-2 mb-2">
+              <Package className="w-5 h-5 text-gray-500" />
+              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Components</h3>
+            </div>
+            
+            <ul className="space-y-1">
+              {componentSections.map((section) => {
+                const isExpanded = expandedSections.has(section.id)
+                const ChevronIcon = isExpanded ? ChevronDown : ChevronRight
+                
+                return (
+                  <li key={section.id}>
+                    <button
+                      onClick={() => toggleSection(section.id)}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+                    >
+                      <ChevronIcon className="w-4 h-4" />
+                      <span>{section.label}</span>
+                    </button>
+                    
+                    {isExpanded && (
+                      <ul className="ml-6 mt-1 space-y-1">
+                        {section.items.map((component) => (
+                          <li key={component.name}>
+                            <Link
+                              to={component.path as any}
+                              className={`
+                                block px-3 py-2 rounded-md text-sm transition-colors duration-200
+                                ${location.pathname === component.path
+                                  ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-700'
+                                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                }
+                              `}
+                              onClick={() => {
+                                if (window.innerWidth < 1024) {
+                                  onClose()
+                                }
+                              }}
+                            >
+                              {component.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </nav>
 
         {/* Sidebar footer */}

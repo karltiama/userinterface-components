@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import logo from '../logo.svg'
 
 export const Route = createFileRoute('/')({
@@ -22,8 +22,14 @@ function App() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
+            to="/demo"
             className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          >
+            View Component Demo
+          </Link>
+          <a
+            className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             href="https://reactjs.org"
             target="_blank"
             rel="noopener noreferrer"
