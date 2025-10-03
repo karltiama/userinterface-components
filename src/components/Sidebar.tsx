@@ -43,8 +43,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     })
   }
 
-  // Navigation items
-  const navigationItems = []
 
   // Component sections
   const componentSections = [
@@ -69,6 +67,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       label: "Section Components",
       items: [
         { name: 'Hero', path: '/components/hero' },
+        { name: 'FloatingHeader', path: '/components/floating-header' },
       ]
     }
   ]

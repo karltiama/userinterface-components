@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ComponentsHeroRouteImport } from './routes/components/hero'
+import { Route as ComponentsFloatingHeaderRouteImport } from './routes/components/floating-header'
 
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
@@ -28,34 +29,49 @@ const ComponentsHeroRoute = ComponentsHeroRouteImport.update({
   path: '/components/hero',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComponentsFloatingHeaderRoute =
+  ComponentsFloatingHeaderRouteImport.update({
+    id: '/components/floating-header',
+    path: '/components/floating-header',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
+  '/components/floating-header': typeof ComponentsFloatingHeaderRoute
   '/components/hero': typeof ComponentsHeroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
+  '/components/floating-header': typeof ComponentsFloatingHeaderRoute
   '/components/hero': typeof ComponentsHeroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
+  '/components/floating-header': typeof ComponentsFloatingHeaderRoute
   '/components/hero': typeof ComponentsHeroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/demo' | '/components/hero'
+  fullPaths: '/' | '/demo' | '/components/floating-header' | '/components/hero'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/demo' | '/components/hero'
-  id: '__root__' | '/' | '/demo' | '/components/hero'
+  to: '/' | '/demo' | '/components/floating-header' | '/components/hero'
+  id:
+    | '__root__'
+    | '/'
+    | '/demo'
+    | '/components/floating-header'
+    | '/components/hero'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoRoute: typeof DemoRoute
+  ComponentsFloatingHeaderRoute: typeof ComponentsFloatingHeaderRoute
   ComponentsHeroRoute: typeof ComponentsHeroRoute
 }
 
@@ -82,12 +98,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComponentsHeroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/components/floating-header': {
+      id: '/components/floating-header'
+      path: '/components/floating-header'
+      fullPath: '/components/floating-header'
+      preLoaderRoute: typeof ComponentsFloatingHeaderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoRoute: DemoRoute,
+  ComponentsFloatingHeaderRoute: ComponentsFloatingHeaderRoute,
   ComponentsHeroRoute: ComponentsHeroRoute,
 }
 export const routeTree = rootRouteImport
