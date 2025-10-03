@@ -6,7 +6,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-white">
       <div className="px-4 py-3 flex items-center justify-between">
         {/* Mobile menu button */}
         <button
