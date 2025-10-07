@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import AnimatedGridHero from '../../components/AnimatedGridHero.tsx'
+import TerrainHero from '../../components/TerrainHero.tsx'
 
 export const Route = createFileRoute('/components/hero')({
   component: HeroComponentsPage,
@@ -61,6 +62,14 @@ function HeroComponentsPage() {
               </div>
             </div>
           </AnimatedGridHero>
+        </div>
+      </section>
+
+      {/* 3D Terrain Hero */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">3D Terrain Hero</h2>
+        <div className="rounded-lg shadow-sm border overflow-hidden">
+          <TerrainHero />
         </div>
       </section>
 

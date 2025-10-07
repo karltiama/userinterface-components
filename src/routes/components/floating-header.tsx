@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import FloatingHeader from '../../components/FloatingHeader.tsx'
 import { useState, useEffect, useRef } from 'react'
 import Button from '../../components/Button.tsx'
 
