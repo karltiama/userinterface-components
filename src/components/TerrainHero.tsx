@@ -71,7 +71,7 @@ export default function TerrainHero({ children }: TerrainHeroProps) {
       {/* Three.js Canvas */}
       <div className="absolute inset-0">
         <Canvas 
-          camera={{ position: [0, -10, 13], fov: 55 }} 
+          camera={{ position: [0, -10, 10], fov: 80 }} 
           dpr={[1, 2]}
         >
           <fog attach="fog" args={['#000000', 8, 28]} />
@@ -87,10 +87,10 @@ export default function TerrainHero({ children }: TerrainHeroProps) {
           {children || (
             <>
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
-                Explore the Terrain
+                Hi I'm Karl
               </h1>
               <p className="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-md max-w-3xl mx-auto">
-                Experience the power of procedural generation with animated 3D landscapes.
+                I'm a software engineer with a passion for building scalable and efficient systems.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button className="px-8 py-4 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg">
