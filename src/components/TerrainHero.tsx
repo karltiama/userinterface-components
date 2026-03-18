@@ -5,6 +5,8 @@ import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js'
 
 interface TerrainHeroProps {
   children?: React.ReactNode
+  /** When true, uses min-h-screen for full-viewport landing pages */
+  fullHeight?: boolean
 }
 
 function Terrain() {
@@ -25,7 +27,7 @@ function Terrain() {
   }, [])
 
   useFrame(() => {
-    // Increment flying to create forward movement effect (reversed direction)
+    // Flying speed: default 0.01 | medium 0.005 | slowest 0.002
     flyingRef.current += 0.01
     
     const pos = geom.attributes.position as THREE.BufferAttribute
@@ -65,9 +67,11 @@ function Terrain() {
   )
 }
 
-export default function TerrainHero({ children }: TerrainHeroProps) {
+export default function TerrainHero({ children, fullHeight }: TerrainHeroProps) {
   return (
-    <div className="relative w-full h-[600px] overflow-hidden bg-black">
+    <div
+      className={`relative w-full overflow-hidden bg-black ${fullHeight ? 'min-h-screen' : 'h-[600px]'}`}
+    >
       {/* Three.js Canvas */}
       <div className="absolute inset-0">
         <Canvas 
@@ -82,8 +86,8 @@ export default function TerrainHero({ children }: TerrainHeroProps) {
       </div>
       
       {/* Text overlay */}
-      <div className="absolute inset-0 flex items-end justify-center pb-16 pointer-events-none">
-        <div className="text-center px-6 pointer-events-auto z-10">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="text-center px-0.5 pointer-events-auto z-10">
           {children || (
             <>
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
@@ -104,6 +108,9 @@ export default function TerrainHero({ children }: TerrainHeroProps) {
           )}
         </div>
       </div>
+
+      {/* Bottom gradient fade — softens the lower edge for seamless section transitions */}
+      <div className="absolute bottom-0 left-0 right-0 h-[30%] bg-gradient-to-b from-transparent to-black pointer-events-none z-20" />
     </div>
   )
 }

@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LandingRouteImport } from './routes/landing'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ComponentsHeroRouteImport } from './routes/components/hero'
 import { Route as ComponentsFloatingHeaderRouteImport } from './routes/components/floating-header'
 
+const LandingRoute = LandingRouteImport.update({
+  id: '/landing',
+  path: '/landing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
@@ -39,12 +45,14 @@ const ComponentsFloatingHeaderRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
+  '/landing': typeof LandingRoute
   '/components/floating-header': typeof ComponentsFloatingHeaderRoute
   '/components/hero': typeof ComponentsHeroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
+  '/landing': typeof LandingRoute
   '/components/floating-header': typeof ComponentsFloatingHeaderRoute
   '/components/hero': typeof ComponentsHeroRoute
 }
@@ -52,18 +60,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
+  '/landing': typeof LandingRoute
   '/components/floating-header': typeof ComponentsFloatingHeaderRoute
   '/components/hero': typeof ComponentsHeroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/demo' | '/components/floating-header' | '/components/hero'
+  fullPaths:
+    | '/'
+    | '/demo'
+    | '/landing'
+    | '/components/floating-header'
+    | '/components/hero'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/demo' | '/components/floating-header' | '/components/hero'
+  to:
+    | '/'
+    | '/demo'
+    | '/landing'
+    | '/components/floating-header'
+    | '/components/hero'
   id:
     | '__root__'
     | '/'
     | '/demo'
+    | '/landing'
     | '/components/floating-header'
     | '/components/hero'
   fileRoutesById: FileRoutesById
@@ -71,12 +91,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoRoute: typeof DemoRoute
+  LandingRoute: typeof LandingRoute
   ComponentsFloatingHeaderRoute: typeof ComponentsFloatingHeaderRoute
   ComponentsHeroRoute: typeof ComponentsHeroRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/landing': {
+      id: '/landing'
+      path: '/landing'
+      fullPath: '/landing'
+      preLoaderRoute: typeof LandingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo': {
       id: '/demo'
       path: '/demo'
@@ -111,6 +139,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoRoute: DemoRoute,
+  LandingRoute: LandingRoute,
   ComponentsFloatingHeaderRoute: ComponentsFloatingHeaderRoute,
   ComponentsHeroRoute: ComponentsHeroRoute,
 }

@@ -1,0 +1,96 @@
+# Hero-to-Content Scroll Transition
+
+## Context
+
+The portfolio landing page has a Three.js wireframe terrain hero animation (`TerrainHero`).
+The hero filled the entire viewport but had no content below it — the page ended at the hero.
+The goal was to extend the landing page into a multi-section scrolling experience without
+introducing a hard visual cut between the hero and the content below.
+
+## Goal
+
+Create a seamless, premium-feeling transition from the animated hero into a static "About"
+section. The hero should feel like it bleeds into the next section, not like two separate blocks
+slapped together.
+
+## Files Changed
+
+| File | Change |
+|------|--------|
+| `src/components/TerrainHero.tsx` | Added bottom gradient overlay div (additive, no breaking changes) |
+| `src/routes/landing.tsx` | Restructured into sticky hero + scrolling content layout; added gradient bridge, About section, and scroll-fade hook |
+
+## Implementation Notes
+
+### Layer stack (bottom to top)
+
+1. **TerrainHero** (`sticky top-0 z-0`) — the Three.js canvas stays pinned at the top of the viewport while the user scrolls. It never moves; the content slides over it.
+2. **Bottom gradient overlay** (`z-20` inside TerrainHero) — a 30%-height gradient from `transparent` to `black` at the bottom of the hero. This softens the terrain's lower edge so it doesn't end abruptly.
+3. **Content container** (`relative z-10`) — sits in normal document flow below the sticky hero. Because it has a higher z-index than the hero's `z-0`, it naturally covers the hero as it scrolls up.
+4. **Gradient bridge** (top of content container) — a 160px tall div with `transparent → #0a0a0f` gradient. Since the hero and this div overlap visually during scroll, the terrain animation shows through the transparent part, creating a soft blending zone.
+5. **About section** (`bg-[#0a0a0f]`) — continues seamlessly from the gradient bridge's end color.
+
+### Scroll-fade hook (`useHeroFade`)
+
+- Uses `requestAnimationFrame` gating to avoid layout thrashing (only one rAF queued at a time).
+- `{ passive: true }` on the scroll listener for best scroll performance.
+- Fade maps scroll position linearly: full opacity at 15% viewport scroll, zero opacity at 55%.
+- Applied via inline `style={{ opacity }}` with a 100ms CSS transition for smoothing.
+
+## Key Decisions
+
+| Decision | Why | Alternative considered |
+|----------|-----|----------------------|
+| `position: sticky` instead of `position: fixed` | Sticky keeps the hero in document flow so we don't need spacer divs or manual height math. The page just works. | `fixed` + a spacer div — more brittle, requires syncing heights. |
+| Gradient overlay inside TerrainHero | Keeps the fade self-contained. Any page using TerrainHero gets the softened bottom edge for free. | Gradient only in `landing.tsx` — means every consumer must add their own. |
+| Scroll listener + rAF instead of IntersectionObserver | IntersectionObserver can't give continuous opacity values — only discrete threshold callbacks. Scroll listener with rAF gating is smooth and low-overhead. | CSS `scroll-timeline` — not yet supported in all browsers. |
+| Inline `AboutSection` component in `landing.tsx` | Keeps the page self-contained while it's small. Extract when it grows. | Separate file — premature at this stage. |
+
+## Assumptions
+
+- The landing page is the only consumer of the sticky + scroll-over layout. TerrainHero itself remains reusable without this layout.
+- The About section content is placeholder — the user will customize the text and stats.
+- `#0a0a0f` (very dark navy) is close enough to black to blend with the hero's black background, but distinct enough to feel like a new surface.
+- No horizontal scroll issues — the hero and content are both full-width.
+
+## Failure Modes
+
+- **Mobile Safari overscroll**: iOS bounce-scroll may briefly show the hero above/below the content. Mitigation: the gradient overlays cover the boundary, so any brief exposure is still gradual, not jarring.
+- **Very short viewports** (< 500px): The fade-start/fade-end thresholds in `useHeroFade` are percentage-based (15%/55% of `vh`), so they scale, but on very small screens the fade may feel too fast.
+- **Three.js canvas continues animating when covered**: The terrain keeps running even when fully behind the About section. This is intentional (the animation is GPU-bound and cheap), but if performance matters on low-end devices, consider pausing the canvas when not visible.
+- **`z-index` conflicts**: If a navbar is added later with its own z-index, ensure it's higher than the content container's `z-10`.
+
+## How to Test
+
+```bash
+npm run dev
+```
+
+1. Navigate to `http://localhost:3000/landing`
+2. Verify the terrain hero fills the first viewport
+3. Scroll down slowly — observe:
+   - Hero text fades out gradually (starts ~15% scroll, gone by ~55%)
+   - Terrain animation stays visible behind the content as it slides over
+   - The gradient bridge creates a soft blend from terrain to About section
+   - No hard line or "cut" between hero and content
+4. Scroll back up — hero text fades back in smoothly
+5. Resize the browser window — layout and fade should adapt to new viewport height
+6. Check on mobile viewport (devtools) — no horizontal overflow, fade still works
+
+## Verification Checklist
+
+- [ ] Hero fills first viewport (`min-h-screen`)
+- [ ] Scrolling reveals the About section sliding over the hero
+- [ ] Hero text fades out as you scroll (not visible when About section covers it)
+- [ ] No hard visual line between hero and About section
+- [ ] Gradient bridge is visible during the transition (terrain peeks through)
+- [ ] About section has correct dark background (`#0a0a0f`)
+- [ ] No lint errors in either changed file
+
+## Next Steps
+
+- Add a floating navbar above the hero (fixed/sticky, high z-index)
+- Add entrance animations to the About section (fade-in-up on scroll into view)
+- Consider pausing the Three.js canvas when fully covered (IntersectionObserver on the sticky container)
+- Add more content sections below About with the same dark design language
+- Customize the About section copy and stats with real data

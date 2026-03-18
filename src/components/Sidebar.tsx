@@ -66,6 +66,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       id: 'sections',
       label: "Section Components",
       items: [
+        { name: 'Landing (3D Terrain)', path: '/landing' },
         { name: 'Hero', path: '/components/hero' },
         { name: 'FloatingHeader', path: '/components/floating-header' },
       ]

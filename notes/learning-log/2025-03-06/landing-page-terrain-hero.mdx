@@ -1,0 +1,43 @@
+# Landing Page with 3D Terrain Hero
+
+## Context
+The app already had a `TerrainHero` component (3D wireframe terrain via React Three Fiber) used inside the Hero components gallery at `/components/hero`. The user wanted this effect as a dedicated landing page.
+
+## Goal
+- Expose the 3D terrain hero on its own route as a full-viewport landing page.
+- Reuse `TerrainHero` without duplicating logic.
+
+## Files Changed
+- `src/components/TerrainHero.tsx` — added optional `fullHeight` prop to use `min-h-screen` instead of fixed `h-[600px]`.
+- `src/routes/landing.tsx` — new route component that renders `TerrainHero` full-height with landing copy and links.
+- `src/components/Sidebar.tsx` — added "Landing (3D Terrain)" link under Section Components.
+
+## Implementation Notes (key logic explained)
+- **fullHeight prop**: When `fullHeight` is true, the wrapper div uses `min-h-screen` so the terrain fills the viewport; otherwise it keeps the original `h-[600px]` for embed use.
+- **Landing route**: Uses `-m-6` on the wrapper to cancel the root layout’s `p-6`, so the hero is edge-to-edge. The route uses `TerrainHero` with custom children (headline, paragraph, Get Started / Learn More links).
+- **Navigation**: "Get Started" goes to `/`, "Learn More" to `/components/hero`. Both use `Link` from TanStack Router.
+
+## Key Decisions (and alternatives considered)
+- **New route `/landing`** instead of replacing `/`: Keeps the existing home page; you can later make `/` redirect to `/landing` or swap content if desired.
+- **Prop on TerrainHero** instead of a separate full-height component: One component, one place to maintain terrain + overlay behavior.
+- **Sidebar link**: Placed under "Section Components" so the landing page is easy to find during development.
+
+## Assumptions
+- Root layout stays as-is (header, sidebar, `main` with `p-6`). No separate layout for the landing route.
+- Copy and links (Get Started → `/`, Learn More → `/components/hero`) are placeholders; you can change them in `landing.tsx`.
+
+## Failure Modes
+- If the route tree isn’t regenerated, `/landing` may 404 until the dev server or codegen runs again.
+- Very small viewports: overlay text and buttons may feel cramped; consider responsive tweaks (smaller text, stacked buttons already in place).
+
+## How to Test (commands + steps)
+1. From repo root: `npm run dev` (or your dev command).
+2. Open `/landing` in the browser (or use Sidebar → Section Components → "Landing (3D Terrain)").
+3. Confirm: terrain fills viewport height, headline/paragraph and two buttons are visible and centered at bottom.
+4. Click "Get Started" → navigates to `/`. Click "Learn More" → navigates to `/components/hero`.
+5. Resize window: terrain area should remain at least full viewport height.
+
+## Next Steps
+- Replace placeholder copy and link targets in `landing.tsx` with your real CTA and routes.
+- Optionally add a layout that hides sidebar/header on `/landing` for a true full-screen landing.
+- Consider making `/` redirect to `/landing` if this becomes the primary entry page.

@@ -1,0 +1,38 @@
+# Landing Page — Bare Layout (No Header/Sidebar)
+
+## Context
+The landing page at `/landing` previously used the same root layout as the rest of the app (header, sidebar, padded main). The user wanted a dedicated layout for the landing route: no header, no sidebar, only the canvas (and its overlay).
+
+## Goal
+- When the user is on `/landing`, render only the page content (TerrainHero) with no app chrome.
+- All other routes keep the existing layout with header and sidebar.
+
+## Files Changed
+- `src/routes/__root.tsx` — Root component checks `pathname === '/landing'` and renders either a bare `<Outlet />` or the full layout (sidebar + header + main + Outlet).
+- `src/routes/landing.tsx` — Removed the `-m-6` wrapper; page now renders only `<TerrainHero fullHeight>` (no need to counteract root padding when using bare layout).
+
+## Implementation Notes (key logic explained)
+- **Conditional layout in root**: `useLocation()` from TanStack Router gives `pathname`. If `pathname === '/landing'`, we return `<> <Outlet /> <TanstackDevtools ... /> </>`. Otherwise we return the full div with Sidebar, Header, main, and Outlet. Devtools are kept in both branches so routing and debugging still work on the landing page.
+- **Landing content**: TerrainHero with `fullHeight` uses `min-h-screen`, so it fills the viewport. No extra wrapper is needed.
+
+## Key Decisions (and alternatives considered)
+- **Pathname check in root** instead of a separate layout route: Avoids adding `_landingLayout` and moving `landing.tsx` to a nested folder; one place to change when adding more “bare” routes later (e.g. extend to `pathname === '/landing' || pathname === '/other-bare'` or use a route meta flag).
+- **Keeping devtools on landing**: So the dev panel still works when viewing `/landing`. Can be removed for production if desired.
+
+## Assumptions
+- Only `/landing` needs the bare layout. If more routes need it, the condition can be generalized (e.g. array of paths or a route meta field).
+- Overlay content (headline, buttons) on the canvas is still desired; only the app header/sidebar are removed.
+
+## Failure Modes
+- Typo in pathname (e.g. `'/landing/'` with trailing slash): Router may normalize paths; if your base path differs, adjust the check.
+- Adding more bare routes: Update the condition (e.g. `['/landing', '/fullscreen'].includes(pathname)`).
+
+## How to Test (commands + steps)
+1. Run the app and go to `/landing`.
+2. Confirm: no header, no sidebar, only the full-screen terrain canvas and overlay (title + buttons).
+3. Navigate to `/` or `/components/hero`: header and sidebar appear again.
+4. From another page, use the sidebar “Landing (3D Terrain)” link and confirm it opens the bare layout.
+
+## Next Steps
+- If you add more full-screen/bare routes, refactor the condition to a shared list or route config.
+- Optionally hide or remove TanstackDevtools on the landing route in production.
