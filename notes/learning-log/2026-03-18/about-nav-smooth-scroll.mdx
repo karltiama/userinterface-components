@@ -1,0 +1,41 @@
+## Context
+
+The "About" nav link used default anchor behavior (instant jump to `#about`). User wanted a gentler scroll and a small top offset.
+
+## Goal
+
+On click: smooth scroll to the About section over ~900ms, with the section sitting ~60px below the top of the viewport (so a bit of content above remains visible).
+
+## Files Changed
+
+- `src/components/LandingNav.tsx` — `handleAboutClick`, `smoothScrollTo` helper, constants.
+
+## Implementation Notes
+
+- **Prevent default** only when `#about` exists (same page); otherwise the link still navigates.
+- **Animated scroll**: `requestAnimationFrame` + **easeOutQuad** (`1 - (1-t)²`) over **900ms**.
+- **Offset**: target scroll position = section top minus **60px** (`SCROLL_OFFSET_PX`), so the section doesn’t sit flush under the nav.
+- No new dependencies; vanilla JS.
+
+## Key Decisions
+
+| Choice | Alternative |
+|--------|-------------|
+| 900ms duration | `scrollIntoView({ behavior: 'smooth' })` — can’t set duration or offset. |
+| 60px offset | 0 (flush) or larger — 60 keeps a small “peek” above. |
+| easeOutQuad | easeInOut — easeOut keeps the end of the scroll calmer. |
+
+## Assumptions
+
+- `LandingNav` is only used on the landing route where `#about` exists.
+- Contact link remains default anchor; same pattern can be applied later if needed.
+
+## How to Test
+
+- `/landing` → click **About** in nav → page scrolls down smoothly; About section sits ~60px from top.
+
+## Verification Checklist
+
+- [ ] Click About → smooth scroll (no instant jump).
+- [ ] About section appears with a small gap below the header.
+- [ ] Direct visit to `/landing#about` still works (browser scrolls; nav click uses custom animation).

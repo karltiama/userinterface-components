@@ -1,0 +1,33 @@
+## Context
+
+About rotating headline was a single flowing line; layout should stay **two stacked rows**.
+
+## Goal
+
+Row 1: **Building things that** (white). Row 2: rotating suffix (blue), with stable vertical space.
+
+## Files Changed
+
+- `src/routes/landing.tsx` — `AboutHeadline` markup + h2 `flex flex-col items-start`.
+
+## Implementation Notes
+
+- **Row 1**: `block` span, `leading-tight`.
+- **Row 2**: `block`, `min-h-[2lh]` so the suffix area always reserves **two line-heights** (less jump when phrases differ in length / wrap).
+- **Gap**: `mt-1 md:mt-2` between rows.
+- **Motion**: inner `motion.span` is `block` so it sits on row 2 only.
+
+## Key Decisions
+
+- **`2lh`** ties min-height to current font line-height (scales with `text-3xl` / `md:text-5xl`).
+- Very long copy on narrow viewports may still wrap to a third visual line; shorten copy or font if that must never happen.
+
+## How to Test
+
+- `/landing` → About: headline is two lines; rotate through suffixes.
+
+## Verification Checklist
+
+- [ ] Line 1 is only “Building things that”.
+- [ ] Line 2 is blue rotating text with space below short phrases (2lh).
+- [ ] Reduced-motion path matches two-row layout.

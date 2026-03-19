@@ -1,0 +1,68 @@
+## Context
+
+Landing page About section (`#about`) previously used a static h2. The goal was to cycle the ending phrase (“matter.” → “excite me.” → “help shape the future.”) with smooth motion.
+
+## Goal
+
+Implement rotating headline suffix using **Framer Motion** (`AnimatePresence` + `motion.span`) with sensible defaults for accessibility.
+
+## Files Changed
+
+- `package.json` / lockfile — added **`framer-motion`**.
+- `src/routes/landing.tsx` — `AboutHeadline` component, wired into `AboutSection`.
+
+## Implementation Notes (key logic explained)
+
+- **Interval**: When the section is **in view** (`useInView`) and the user has **not** requested reduced motion, `setInterval` advances the suffix index every **3800ms**.
+- **Exit / enter**: `AnimatePresence` with `mode="wait"` runs exit on the old span before the new one enters; avoids overlap.
+- **`initial={false}`**: First visible phrase does not play an entrance animation on mount (only after first swap).
+- **Reduced motion**: `useReducedMotion()` — if true, cycling and Framer animations are skipped; static first phrase (**matter.**) is shown.
+- **Stagger**: Existing `stagger(1, …)` still applies to the `<h2>` (fade-in-up when section enters).
+
+## Key Decisions (and alternatives considered)
+
+| Decision | Alternative |
+|----------|-------------|
+| **framer-motion** | CSS-only keyframes + `key` remount — fewer deps, less control over exit. |
+| **Cycle only when `inView`** | Always cycle — wastes updates when scrolled away. |
+| **`aria-live="polite"`** on rotating span | Omit — quieter for SR but less sync with visible text. |
+| **Accent color on suffix** | All white — less emphasis on the changing word. |
+
+## Assumptions
+
+- First suffix is acceptable as the only line when **prefers-reduced-motion** is on.
+- Interval length (3.8s) is readable; tweak `ABOUT_HEADLINE_INTERVAL_MS` as needed.
+
+## Failure Modes
+
+- **Layout shift**: Longest phrase is “help shape the future.” — `min-h-[1.15em]` limits vertical jump; very narrow viewports may still wrap differently per phrase.
+- **SR noise**: `aria-live="polite"` may announce each change; remove if it feels noisy for your audience.
+- **`useReducedMotion()` null**: Framer may return `null` before hydration — treated as falsy; cycling runs once resolved (if ever true, interval cleanup applies).
+
+## How to Test (commands + steps)
+
+1. `npm run dev` → open `/landing`, scroll to About.
+2. Confirm headline cycles: **matter.** → **excite me.** → **help shape the future.** → repeat.
+3. OS: enable **Reduce motion** (Windows / macOS) → reload → only **matter.** shows, no cycling.
+4. Scroll About out of view and back — cycling should resume when in view (index may continue from last).
+
+## Next Steps
+
+- Add more suffixes via `ABOUT_HEADLINE_SUFFIXES`.
+- Optional: reset `suffixIndex` when section leaves view.
+- Optional: `min-w-*` on the blue span if horizontal jump is noticeable.
+
+## Dependencies
+
+- **framer-motion** — animation orchestration, `AnimatePresence`, `useReducedMotion`.
+- **Simpler alternative**: single `useState` + CSS `animation` on a keyed `<span>` (no new dependency).
+
+---
+
+## Verification Checklist
+
+- [ ] `/landing` — About h2 shows “Building things that …” with blue rotating suffix.
+- [ ] After ~4s per phrase, crossfade + slight vertical motion feels acceptable.
+- [ ] With **prefers-reduced-motion**, headline stays on **matter.** only.
+- [ ] No console errors; `npm run build` passes.
+- [ ] Staggered section entrance still works for the h2 on first scroll-in.

@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import LandingNav from '../components/LandingNav'
 import TerrainHero from '../components/TerrainHero'
@@ -53,27 +54,12 @@ function LandingPage() {
               style={{ opacity: heroContentOpacity }}
               className="transition-opacity duration-100"
             >
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
+              <h1 className="text-5xl md:text-7xl font-bold text-blue-400 mb-6 drop-shadow-lg">
                 Hi I'm Karl
               </h1>
-              <p className="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-md max-w-3xl mx-auto">
-                I'm a software engineer with a passion for building scalable and
-                efficient systems.
+              <p className="text-xl md:text-2xl text-gray-200 drop-shadow-md max-w-3xl mx-auto">
+                I build scalable systems and share what I learn through technical writing and mental models.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  to="/"
-                  className="px-8 py-4 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg text-center"
-                >
-                  Get Started
-                </Link>
-                <Link
-                  to="/components/hero"
-                  className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 text-center"
-                >
-                  Learn More
-                </Link>
-              </div>
             </div>
           </TerrainHero>
         </div>
@@ -91,6 +77,36 @@ function LandingPage() {
 
           {/* About section */}
           <AboutSection />
+
+          {/* Work section */}
+          <section id="work" className="bg-[#0a0a0f] px-6 py-24 md:py-32">
+            <div className="max-w-4xl mx-auto">
+              <p className="text-sm font-medium tracking-widest uppercase text-blue-400 mb-4">
+                Work
+              </p>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">
+                Selected projects
+              </h2>
+              <p className="text-lg text-gray-400">
+                Coming soon — case studies and highlights.
+              </p>
+            </div>
+          </section>
+
+          {/* Blog section */}
+          <section id="blog" className="bg-[#0a0a0f] px-6 py-24 md:py-32">
+            <div className="max-w-4xl mx-auto">
+              <p className="text-sm font-medium tracking-widest uppercase text-blue-400 mb-4">
+                Blog
+              </p>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">
+                Writing
+              </h2>
+              <p className="text-lg text-gray-400">
+                Coming soon — articles and notes.
+              </p>
+            </div>
+          </section>
         </div>
       </div>
     </main>
@@ -120,6 +136,65 @@ function useInView(threshold = 0.1) {
 
 const STAGGER_MS = 80
 
+const ABOUT_HEADLINE_SUFFIXES = [
+  'solve real-world problems.',
+  'scale with users.',
+  'actually get used.',
+] as const
+
+const ABOUT_HEADLINE_INTERVAL_MS = 3800
+
+function AboutHeadline({
+  inView,
+  headlineProps,
+}: {
+  inView: boolean
+  headlineProps: { className: string; style?: React.CSSProperties }
+}) {
+  const [suffixIndex, setSuffixIndex] = useState(0)
+  const reduceMotion = useReducedMotion()
+
+  useEffect(() => {
+    if (!inView || reduceMotion) return
+    const id = window.setInterval(() => {
+      setSuffixIndex((i) => (i + 1) % ABOUT_HEADLINE_SUFFIXES.length)
+    }, ABOUT_HEADLINE_INTERVAL_MS)
+    return () => window.clearInterval(id)
+  }, [inView, reduceMotion])
+
+  const suffix =
+    ABOUT_HEADLINE_SUFFIXES[reduceMotion ? 0 : suffixIndex]
+
+  return (
+    <h2 {...headlineProps}>
+      <span className="block text-white leading-tight">Building things that</span>
+      {reduceMotion ? (
+        <span className="mt-1 block min-h-[2lh] text-blue-400 leading-tight md:mt-2">
+          {suffix}
+        </span>
+      ) : (
+        <span
+          className="mt-1 block min-h-[2lh] text-blue-400 leading-tight md:mt-2"
+          aria-live="polite"
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={suffix}
+              className="block"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {suffix}
+            </motion.span>
+          </AnimatePresence>
+        </span>
+      )}
+    </h2>
+  )
+}
+
 function AboutSection() {
   const { ref, inView } = useInView(0.1)
 
@@ -132,15 +207,27 @@ function AboutSection() {
     <section
       id="about"
       ref={ref}
-      className="bg-[#0a0a0f] px-6 py-24 md:py-32"
+      className="relative overflow-hidden bg-[#0a0a0f] px-6 py-24 md:py-32"
     >
-      <div className="max-w-4xl mx-auto">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.16]"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.18) 1px, transparent 0)',
+          backgroundSize: '18px 18px',
+        }}
+      />
+      <div className="relative max-w-4xl mx-auto">
         <p {...stagger(0, 'text-sm font-medium tracking-widest uppercase text-blue-400 mb-4')}>
           About
         </p>
-        <h2 {...stagger(1, 'text-3xl md:text-5xl font-bold text-white mb-8')}>
-          Building things that matter.
-        </h2>
+        <AboutHeadline
+          inView={inView}
+          headlineProps={stagger(
+            1,
+            'flex flex-col items-start text-3xl md:text-5xl font-bold mb-8'
+          )}
+        />
         <p {...stagger(2, 'text-lg md:text-xl text-gray-400 leading-relaxed mb-6')}>
           I'm a software engineer who cares deeply about craft — from the
           architecture that holds a system together to the interface that makes

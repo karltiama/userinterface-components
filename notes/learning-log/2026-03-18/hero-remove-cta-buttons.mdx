@@ -1,0 +1,27 @@
+## Context
+
+Landing hero overlay showed **Get Started** / **Learn More** CTAs; user wanted them removed.
+
+## Goal
+
+No CTA row under the hero headline + subcopy on `/landing` and in `TerrainHero` default content.
+
+## Files Changed
+
+- `src/routes/landing.tsx` — removed `Link` row; dropped unused `Link` import; removed `mb-8` from paragraph (no buttons below).
+- `src/components/TerrainHero.tsx` — removed default fallback buttons; matched paragraph spacing.
+
+## Implementation Notes
+
+- Nav to `/` or `/components/hero` is still available via **LandingNav** / other routes if needed.
+
+## How to Test
+
+- `npm run dev` → `/landing`: hero shows title + tagline only.
+- Any route using `TerrainHero` without `children` shows the same (no buttons).
+
+## Verification Checklist
+
+- [ ] No Get Started / Learn More in hero.
+- [ ] No unused-import / lint issues.
+- [ ] Hero copy spacing looks fine without the button row.

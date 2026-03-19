@@ -1,0 +1,59 @@
+## Context
+
+The landing page `#about` section needed a more tactile background treatment without adding heavy animation. A subtle transparent dot-grid overlay can add depth while keeping content readable.
+
+## Goal
+
+Add a subtle dot-grid overlay to the About section background.
+
+## Files Changed
+
+- `src/routes/landing.tsx`
+- `notes/learning-log/2026-03-19/about-dot-grid-overlay.mdx`
+
+## Implementation Notes (key logic explained)
+
+- The `#about` `<section>` is now `relative overflow-hidden` so we can safely layer an overlay inside it.
+- A full-cover overlay `<div>` is added as `absolute inset-0 pointer-events-none` with a low opacity.
+- The dot pattern is a CSS `radial-gradient(...)` repeated via `backgroundSize: '18px 18px'`.
+- The content wrapper is made `relative` so it renders above the overlay.
+
+## Key Decisions (and alternatives considered)
+
+- **Radial-gradient dots**: lightweight (no assets) and easy to tune.
+  - **Alternative**: SVG background image (more control, slightly more setup).
+- **Low opacity** (`opacity-[0.16]`): keeps the pattern present but not distracting.
+  - **Alternative**: stronger opacity + mask/gradient fade (more stylized but riskier for readability).
+
+## Assumptions
+
+- White dots on `#0a0a0f` are acceptable; if you prefer a blue tint, we can swap the RGBA color.
+- Dot spacing of `18px` matches the scale of the typography and doesn’t cause visible moiré on most displays.
+
+## Failure Modes
+
+- **Moiré / shimmer** on some monitors: reduce dot contrast (lower alpha) or increase spacing (e.g. 22–26px).
+- **Readability issues** behind small text: reduce opacity further (e.g. `0.10–0.12`) or fade dots with a mask.
+- **Banding** in gradients (rare): switch to an SVG pattern.
+
+## How to Test (commands + steps)
+
+- Run `npm run dev`
+- Visit `/landing`
+- Scroll to **About** and verify:
+  - Dots are visible but subtle.
+  - Text contrast remains strong.
+  - Overlay does not block clicks/selection (it’s `pointer-events-none`).
+
+## Next Steps
+
+- Apply the same overlay to alternating sections (e.g. Work/Blog) but with different opacity for rhythm.
+- Optional: fade the dot overlay near the bottom using a CSS mask for a softer transition.
+
+## Verification Checklist
+
+- [ ] About section shows a subtle dot-grid background.
+- [ ] Text remains easy to read on mobile and desktop.
+- [ ] The overlay doesn’t interfere with interaction (links/select).
+- [ ] No lint/type errors in `landing.tsx`.
+

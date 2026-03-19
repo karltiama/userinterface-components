@@ -1,0 +1,35 @@
+## Context
+
+Rotating About headline suffixes were updated to match new messaging.
+
+## Goal
+
+Cycle: **solve real-world problems** → **scale with users** → **actually get used** (after “Building things that ”).
+
+## Files Changed
+
+- `src/routes/landing.tsx` — `ABOUT_HEADLINE_SUFFIXES` array only.
+
+## Implementation Notes
+
+- Full lines read: “Building things that solve real-world problems.” etc.
+- **Reduced motion** still shows only the **first** suffix (`solve real-world problems.`).
+- Hyphen in **real-world** improves scan readability.
+
+## Key Decisions
+
+- Period on each suffix for consistent sentence endings.
+
+## Assumptions
+
+- Longest phrase may wrap on small screens; existing `min-h` on the animated span unchanged.
+
+## How to Test
+
+- `npm run dev` → `/landing` → About: confirm three phrases rotate.
+
+## Verification Checklist
+
+- [ ] Three new phrases appear in rotation.
+- [ ] Grammar reads naturally with “Building things that ”.
+- [ ] Reduced motion shows first phrase only.

@@ -90,20 +90,12 @@ export default function TerrainHero({ children, fullHeight }: TerrainHeroProps) 
         <div className="text-center px-0.5 pointer-events-auto z-10">
           {children || (
             <>
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
+              <h1 className="text-5xl md:text-7xl font-bold text-blue-400 mb-6 drop-shadow-lg">
                 Hi I'm Karl
               </h1>
-              <p className="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-md max-w-3xl mx-auto">
-                I'm a software engineer with a passion for building scalable and efficient systems.
+              <p className="text-xl md:text-2xl text-gray-200 drop-shadow-md max-w-3xl mx-auto">
+                I build scalable systems and data-driven applications that solve real problems.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-8 py-4 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg">
-                  Get Started
-                </button>
-                <button className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300">
-                  Learn More
-                </button>
-              </div>
             </>
           )}
         </div>
